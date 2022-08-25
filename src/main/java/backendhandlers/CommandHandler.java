@@ -101,7 +101,7 @@ public class CommandHandler {
 	private void executeRemove(Command command) throws IOException, SlackApiException {
 		String channelName = getChannelName(Integer.parseInt(command.year()), command.section());
 		for (String email : command.args()) {
-			String returnResponse = handler.addUserToChannel(email, channelName);
+			String returnResponse = handler.removeUserFromChannel(email, channelName);
 			if (returnResponse != null) {
 				System.out.println(String.format("Removing user: %s from channel: %s failed with the message: %s",
 						email, channelName, returnResponse));
@@ -173,5 +173,9 @@ public class CommandHandler {
 
 	public boolean specialEquals(String token) {
 		return this.handler.specialEquals(new SlackHandler(token));
+	}
+
+	public SlackHandler getSlackHandler() {
+		return this.handler;
 	}
 }

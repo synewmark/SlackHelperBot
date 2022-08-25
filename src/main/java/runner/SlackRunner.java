@@ -12,6 +12,7 @@ import com.slack.api.methods.SlackApiException;
 
 import backendhandlers.CSVReader;
 import backendhandlers.CommandHandler;
+import backendhandlers.SlackHandler;
 import model.Command;
 
 public class SlackRunner {
@@ -63,5 +64,9 @@ public class SlackRunner {
 
 	public boolean specialEquals(String token) {
 		return commandHandler.specialEquals(token);
+	}
+
+	public SlackHandler getSlackHandler() {
+		return commandHandler.getSlackHandler();
 	}
 }

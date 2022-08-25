@@ -37,7 +37,17 @@ public class SlackHandler {
 
 	private final User self;
 
-	private Map<String, String> nameToConversationMap = new HashMap<>();
+	// On startup SlackHandler will populate it's own internal state from the remote
+	// Slack Worspace - subsequent stateful changes will be handled automatically
+	// internally.
+
+	// NOTE: Making changes to the Slack Workspace not using SlackHandler, using
+	// multiple SlackHandler instance on the same workspace, or if the
+	// local model falls out of synch of the remote workspace for any other reason
+	// subsequent modifications will result in undefined behavior. No attempt is
+	// made to cause "Fail-Fast" behavior.
+	private Map<String, String> nameToConversationIDMap = new HashMap<>();
+	// maps channel ids to sets of user ids
 	private Map<String, Set<String>> completeUserMap = new HashMap<>();
 	private Map<String, String> emailToUserMap = new HashMap<>();
 
@@ -59,7 +69,7 @@ public class SlackHandler {
 				if (channelName == null) {
 					continue;
 				}
-				nameToConversationMap.put(channelName, channel.getId());
+				nameToConversationIDMap.put(channelName, channel.getId());
 				addChannelToSets(channelName, channel);
 				completeUserMap.put(channel.getId(), new HashSet<>(getUsersInChannel(channel.getId())));
 			}
@@ -71,7 +81,7 @@ public class SlackHandler {
 				}
 			}
 		} catch (IOException | SlackApiException e) {
-			throw new IllegalStateException("Error initializing");
+			throw new IllegalStateException("Error initializing", e);
 		}
 	}
 
@@ -79,18 +89,22 @@ public class SlackHandler {
 		checkEmail(userEmail);
 		checkChannel(channelName);
 		String userID = emailToUserMap.get(userEmail);
-		String channelID = nameToConversationMap.get(channelName);
+		String channelID = nameToConversationIDMap.get(channelName);
 		ConversationsInviteResponse response = methods
 				.conversationsInvite(r -> r.token(token).channel(channelID).users(List.of(userID)));
 		if (response.isOk()) {
 			completeUserMap.get(channelID).add(userID);
 		}
+//		if (response.isOk() && response.getError() != null) {
+//			System.out.println(userEmail + " " + channelName);
+//		}
+//		System.out.println(response.getError() + " " + response.getWarning());
 		return response.getError();
 	}
 
 	public String removeUserFromChannel(String userEmail, String channelName) throws IOException, SlackApiException {
 		checkChannel(channelName);
-		String channelID = nameToConversationMap.get(channelName);
+		String channelID = nameToConversationIDMap.get(channelName);
 		return removeUserFromChannelUsingID(userEmail, channelID);
 	}
 
@@ -101,7 +115,7 @@ public class SlackHandler {
 		ConversationsKickResponse response = methods
 				.conversationsKick(r -> r.token(token).channel(channelID).user(userID));
 		if (response.isOk()) {
-			completeUserMap.get(nameToConversationMap.get(userEmail)).remove(userEmail);
+			completeUserMap.get(channelID).remove(userID);
 		}
 		return response.getError();
 	}
@@ -127,8 +141,9 @@ public class SlackHandler {
 
 	private String removeFromAnyChannel(String userEmail, boolean gradeOrTrack) throws IOException, SlackApiException {
 		var setToSearch = gradeOrTrack ? gradeChannels : trackChannels;
+		String userID = emailToUserMap.get(userEmail);
 		for (String channelID : setToSearch) {
-			if (completeUserMap.get(channelID).contains(userEmail)) {
+			if (completeUserMap.get(channelID).contains(userID)) {
 				return removeUserFromChannelUsingID(userEmail, channelID);
 			}
 		}
@@ -139,7 +154,7 @@ public class SlackHandler {
 		ConversationsCreateResponse response = methods
 				.conversationsCreate(r -> r.token(token).name(channelName).isPrivate(makePrivate));
 		if (response.getChannel() != null) {
-			nameToConversationMap.put(channelName, response.getChannel().getId());
+			nameToConversationIDMap.put(channelName, response.getChannel().getId());
 			Set<String> selfSet = new HashSet<>();
 			selfSet.add(self.getId());
 			completeUserMap.put(response.getChannel().getId(), selfSet);
@@ -150,19 +165,21 @@ public class SlackHandler {
 
 	public String archiveChannel(String channelName) throws IOException, SlackApiException {
 		checkChannel(channelName);
-		ConversationsArchiveResponse response = methods.conversationsArchive(r -> r.token(token).channel(channelName));
+		String channelID = nameToConversationIDMap.get(channelName);
+		ConversationsArchiveResponse response = methods.conversationsArchive(r -> r.token(token).channel(channelID));
 		if (response.isOk()) {
-			archivedChannels.add(nameToConversationMap.get(channelName));
+			archivedChannels.add(nameToConversationIDMap.get(channelName));
 		}
 		return response.getError();
 	}
 
 	public String unarchiveChannel(String channelName) throws IOException, SlackApiException {
 		checkChannel(channelName);
+		String channelID = nameToConversationIDMap.get(channelName);
 		ConversationsUnarchiveResponse response = methods
-				.conversationsUnarchive(r -> r.token(token).channel(channelName));
+				.conversationsUnarchive(r -> r.token(token).channel(channelID));
 		if (response.isOk()) {
-			archivedChannels.remove(nameToConversationMap.get(channelName));
+			archivedChannels.remove(nameToConversationIDMap.get(channelName));
 		}
 		return response.getError();
 	}
@@ -178,7 +195,7 @@ public class SlackHandler {
 	}
 
 	private void checkChannel(String channelName) {
-		if (!nameToConversationMap.containsKey(channelName)) {
+		if (!nameToConversationIDMap.containsKey(channelName)) {
 			throw new IllegalArgumentException("Channel: " + channelName + " does not exist!");
 		}
 	}
@@ -218,11 +235,11 @@ public class SlackHandler {
 	}
 
 	private static boolean isGradeChannel(String name) {
-		return name.matches("\\b(class_of_)\\b\\d{4}");
+		return name.matches("(class_of_)\\d{4}");
 	}
 
 	private static boolean isTrackChannel(String name) {
-		return name.matches("\\b(class_of_)\\b\\d{4}_\\b(ai|ds)\\b");
+		return name.matches("(class_of_)\\d{4}_(ai|ds)");
 	}
 
 	private String getUserIDAndSetHeaders() throws IOException, SlackApiException {
@@ -248,15 +265,56 @@ public class SlackHandler {
 		}
 	}
 
+	// the following methods are diagnostic in nature, they are intended to check
+	// the internal state of this SlackHandler instance. Their results are only
+	// meaningful if you first check the state against the remote Workspace (see
+	// specialEquals)
+
+	public boolean channelExists(String channel) {
+		return nameToConversationIDMap.containsKey(channel);
+	}
+
+	public boolean channelIsArchived(String channel) {
+		return archivedChannels.contains(nameToConversationIDMap.get(channel));
+	}
+
+	public boolean userExists(String user) {
+		return emailToUserMap.containsKey(user);
+	}
+
+	public boolean channelContainsUser(String channel, String user) {
+		return completeUserMap.getOrDefault(channel, new HashSet<>()).contains(user);
+	}
+
+	public int numberOfUsersInChannel(String channel) {
+		return completeUserMap.containsKey(nameToConversationIDMap.get(channel))
+				? completeUserMap.get(nameToConversationIDMap.get(channel)).size()
+				: -1;
+	}
+
+	public int getNumberOfChannels() {
+		return nameToConversationIDMap.size();
+	}
+
+	public Set<String> getAllChannels() {
+		return new HashSet<>(nameToConversationIDMap.keySet());
+	}
+
 	// specialEquals implementation is done statefully and does not fulfill standard
 	// equals contract
+
+	// specialEquals is intended to ensure that 2 SlackHandler instances have the
+	// same internal state.
+	// A good diagnostic technique is to create a second SlackHandler instance which
+	// will automaticall populate it's state on startup to compare to a long running
+	// instance.
 	public boolean specialEquals(SlackHandler other) {
 		return vertifyEquals(archivedChannels, other.archivedChannels)
 				&& vertifyEquals(completeUserMap, other.completeUserMap)
 				&& vertifyEquals(emailToUserMap, other.emailToUserMap)
 				&& vertifyEquals(generalChannels, other.generalChannels)
 				&& vertifyEquals(gradeChannels, other.gradeChannels)
-				&& vertifyEquals(nameToConversationMap, other.nameToConversationMap);
+				&& vertifyEquals(nameToConversationIDMap, other.nameToConversationIDMap);
 	}
 
 	private boolean vertifyEquals(Object a, Object b) {
