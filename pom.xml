@@ -32,6 +32,8 @@
 			        <descriptorRefs>
 			          <descriptorRef>jar-with-dependencies</descriptorRef>
 			        </descriptorRefs>
+					<finalName>AutoSubmit</finalName>
+     				<appendAssemblyId>false</appendAssemblyId>
 			      </configuration>
 			    </execution>
 			  </executions>
