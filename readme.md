@@ -4,6 +4,7 @@
 | :- | :- | :- | :- |
 |CommandFile|-commandFile|-c|Location of the csv command file|
 |Token|-token|-t|Slack API token|
+
 Token can be created by following the “Slack\_Installation\_Guide.pdf”
 
 CommandFile is CSV format, see below for possible commands.
