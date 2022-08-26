@@ -18,10 +18,13 @@ public class MainCommandLine {
 
 	private static void checkArgs(Arguments arguments) {
 		if (arguments.token == null) {
-			System.err.println("Token must be non-empty");
+			throw new IllegalArgumentException("Token must be non-empty");
+		}
+		if (arguments.commandFile == null) {
+			throw new IllegalArgumentException("Command file must be non-empty");
 		}
 		if (!arguments.commandFile.exists() || !arguments.commandFile.canRead()) {
-			System.err.println("Cannot read from file: " + arguments.commandFile
+			throw new IllegalArgumentException("Cannot read from file: " + arguments.commandFile
 					+ " check that file exists and you have read permissions");
 		}
 	}
