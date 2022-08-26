@@ -11,9 +11,8 @@ import java.util.Set;
 import com.newmark.SlackHelperBot.backendhandlers.CSVReader;
 import com.newmark.SlackHelperBot.backendhandlers.CommandHandler;
 import com.newmark.SlackHelperBot.backendhandlers.SlackHandler;
+import com.newmark.StudentListManager.model.Command;
 import com.slack.api.methods.SlackApiException;
-
-import model.Command;
 
 public class SlackRunner {
 	private final CommandHandler commandHandler;

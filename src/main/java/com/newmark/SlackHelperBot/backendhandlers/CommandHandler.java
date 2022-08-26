@@ -8,9 +8,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 
+import com.newmark.StudentListManager.model.Command;
 import com.slack.api.methods.SlackApiException;
-
-import model.Command;
 
 public class CommandHandler {
 

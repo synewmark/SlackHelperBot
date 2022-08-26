@@ -8,7 +8,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import model.Command;
+import com.newmark.StudentListManager.model.Command;
 
 public class CSVReader implements Iterable<Command>, Iterator<Command> {
 	private final Iterator<CSVRecord> csvRecordIterator;
