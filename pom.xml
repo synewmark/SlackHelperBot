@@ -54,7 +54,7 @@
 	<dependency>
 	<groupId>com.github.synewmark</groupId>
 	    <artifactId>StudentListManager</artifactId>
-	    <version>1e5aeb57d531467c427ce0149c074684c37e97c8</version> <!--JitPack uses the commit ID as a version #-->
+	    <version>d8c7a63ff68726d487031a0dd6b8032a852d1d50</version> <!--JitPack uses the commit ID as a version #-->
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
 		<dependency>
