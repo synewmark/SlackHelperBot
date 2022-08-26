@@ -1,24 +1,20 @@
-  ------------- -------------- --------------- ----------------------------------
-  Name:         Long option:   Short option:   Description:
-  ------------- -------------- --------------- ----------------------------------
-  CommandFile   -commandFile   -c              Location of the csv command file
-  Token         -token         -t              Slack API token
-  ------------- -------------- --------------- ----------------------------------
+  | Name:         Long option:   Short option:   Description:                       |
+  | ------------- -------------- --------------- ---------------------------------- |
+  | CommandFile   -commandFile   -c              Location of the csv command file   |
+  | Token         -token         -t              Slack API token                    |
 
 Token can be created by following the "Slack_Installation_Guide.pdf"
 
 CommandFile is CSV format, see below for possible commands.
 
-  ------------------ ------ --------- -----------------------------------
-  Command            Year   Section   Last Arg
-  ------------------ ------ --------- -----------------------------------
-  CREATECHANNEL      year   section   public/private
-  ADDSTUDENT         year   section   student_email1, student_email2...
-  REMOVESTUDENT      year   section   student_email1, student_email2...
-  MOVESTUDENT        year   section   student_email1, student_email2...
-  ARCHIVECHANNEL     year   section   
-  UNARCHIVECHANNEL   year   section   
-  ------------------ ------ --------- -----------------------------------
+  | Command            Year   Section   Last Arg
+  | ------------------ ------ --------- ----------------------------------- |
+  | CREATECHANNEL      year   section   public/private                      |
+  | ADDSTUDENT         year   section   student_email1, student_email2...   |
+  | REMOVESTUDENT      year   section   student_email1, student_email2...   |
+  | MOVESTUDENT        year   section   student_email1, student_email2...   |
+  | ARCHIVECHANNEL     year   section                                       |
+  | UNARCHIVECHANNEL   year   section                                       |
 
 Section has 3 possibilities, "AI", "DS", "". If blank, will deal with
 the channel for the entire year instead of just that section. I.e. year:
