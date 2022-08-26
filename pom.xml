@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <packaging>jar</packaging>
   <groupId>SlackHelperBot</groupId>
   <artifactId>SlackHelperBot</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -13,9 +13,49 @@
           <release>14</release>
         </configuration>
       </plugin>
+		<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-assembly-plugin</artifactId>
+			  <executions>	
+			    <execution>
+			      <id>jar-with-dependencies</id>
+			      <phase>package</phase>
+			      <goals>
+			        <goal>single</goal>
+			      </goals>
+			      <configuration>
+                    <archive>
+                        <manifest>
+                        	<mainClass>runner.MainCommandLine</mainClass>
+                        </manifest>
+                    </archive>
+			        <descriptorRefs>
+			          <descriptorRef>jar-with-dependencies</descriptorRef>
+			        </descriptorRefs>
+					<finalName>AutoSubmit</finalName>
+     				<appendAssemblyId>false</appendAssemblyId>
+			      </configuration>
+			    </execution>
+			  </executions>
+			</plugin>
+			<plugin>
+			    <artifactId>maven-jar-plugin</artifactId>
+			    <version>3.0.2</version>
+			    <executions>
+			        <execution>
+			            <id>default-jar</id>
+			            <phase>none</phase>
+			        </execution>
+			    </executions>
+			</plugin>
     </plugins>
   </build>
 	<dependencies>
+	<dependency>
+	<groupId>com.github.synewmark</groupId>
+	    <artifactId>StudentListManager</artifactId>
+	    <version>1e5aeb57d531467c427ce0149c074684c37e97c8</version> <!--JitPack uses the commit ID as a version #-->
+	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
@@ -32,5 +72,19 @@
 			  <artifactId>google-options</artifactId>
 			  <version>1.0.0</version>
 			</dependency>
+	<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+	<dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter-api</artifactId>
+	    <version>5.9.0</version>
+	    <scope>test</scope>
+		</dependency>
 	  </dependencies>
+ 	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://www.jitpack.io</url>
+		</repository>
+	</repositories>
+
 </project>
