@@ -17,7 +17,7 @@ public class MainCommandLine {
 	}
 
 	private static void checkArgs(Arguments arguments) {
-		if (arguments.token == null) {
+		if (arguments.token == null || arguments.token.isBlank()) {
 			throw new IllegalArgumentException("Token must be non-empty");
 		}
 		if (arguments.commandFile == null) {
