@@ -1,4 +1,4 @@
-package runner;
+package com.newmark.SlackHelperBot.runner;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.OptionsBase;
 import com.google.devtools.common.options.OptionsParsingException;
 
-public class Arguments extends OptionsBase {
+public class SlackArguments extends OptionsBase {
 	@Option(name = "commandFile", abbrev = 'c', help = "Location of command CSV file", defaultValue = "", converter = FileConverter.class)
 	public File commandFile;
 	@Option(name = "token", abbrev = 't', help = "API Token for Slack", defaultValue = "")

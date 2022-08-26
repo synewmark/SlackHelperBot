@@ -1,22 +1,22 @@
-package runner;
+package com.newmark.SlackHelperBot.runner;
 
 import java.io.IOException;
 
 import com.google.devtools.common.options.OptionsParser;
 
 public class MainCommandLine {
-	static Arguments arguments;
+	static SlackArguments arguments;
 
 	public static void main(String[] args) throws IOException {
-		OptionsParser parser = OptionsParser.newOptionsParser(Arguments.class);
+		OptionsParser parser = OptionsParser.newOptionsParser(SlackArguments.class);
 		parser.parseAndExitUponError(args);
-		arguments = parser.getOptions(Arguments.class);
+		arguments = parser.getOptions(SlackArguments.class);
 		checkArgs(arguments);
 		SlackRunner slackRunner = new SlackRunner(arguments.token, arguments.commandFile);
 		slackRunner.execute();
 	}
 
-	private static void checkArgs(Arguments arguments) {
+	private static void checkArgs(SlackArguments arguments) {
 		if (arguments.token == null || arguments.token.isBlank()) {
 			throw new IllegalArgumentException("Token must be non-empty");
 		}

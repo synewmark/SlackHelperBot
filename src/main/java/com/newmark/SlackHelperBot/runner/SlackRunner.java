@@ -1,4 +1,4 @@
-package runner;
+package com.newmark.SlackHelperBot.runner;
 
 import java.io.File;
 import java.io.FileReader;
@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.newmark.SlackHelperBot.backendhandlers.CSVReader;
+import com.newmark.SlackHelperBot.backendhandlers.CommandHandler;
+import com.newmark.SlackHelperBot.backendhandlers.SlackHandler;
 import com.slack.api.methods.SlackApiException;
 
-import backendhandlers.CSVReader;
-import backendhandlers.CommandHandler;
-import backendhandlers.SlackHandler;
 import model.Command;
 
 public class SlackRunner {

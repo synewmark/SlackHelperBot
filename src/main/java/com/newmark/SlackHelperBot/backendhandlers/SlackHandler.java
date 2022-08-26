@@ -1,4 +1,4 @@
-package backendhandlers;
+package com.newmark.SlackHelperBot.backendhandlers;
 
 import java.io.IOException;
 import java.util.ArrayList;
